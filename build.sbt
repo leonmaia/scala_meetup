@@ -37,6 +37,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.twitter" %% "finagle-http" % "6.39.0",
   "com.twitter" %% "finagle-stats" % "6.39.0",
+  "com.twitter" %% "util-eval" % "6.38.0",
   "com.twitter" %% "twitter-server" % "1.24.0",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.4",
   "mesosphere" %% "jackson-case-class-module" % "0.1.2",
