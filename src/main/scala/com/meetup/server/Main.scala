@@ -18,6 +18,8 @@ object Main extends TwitterServer
 
   def serviceName: String = "meetup-api-server"
 
+  def port = ":8888"
+
   val router = new Router()
 
   def main(): Unit = {
@@ -30,7 +32,7 @@ object Main extends TwitterServer
       .withTracer(new HttpZipkinTracer())
       .configured(param.Label(name))
       .configured(Http.param.MaxRequestSize(maxRequestSize().megabytes))
-      .serve(":8888", router.create)
+      .serve(port, router.create)
     onExit {
       server.close()
     }

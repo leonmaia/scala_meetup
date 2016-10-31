@@ -1,13 +1,15 @@
 package com.meetup.http
 
-import com.meetup.json.converters._
+import com.meetup.{EvalInput, Media}
+import com.meetup.json._
 import com.twitter.finagle.http.Request
 
 package object readers {
-
-  case class EvalInput(expr: String)
-
   val evalInput = new ((Request) => EvalInput) {
-    override def apply(v1: Request): EvalInput = v1.contentString.fromJson[EvalInput]
+    override def apply(v1: Request): EvalInput = fromJson[EvalInput](v1.contentString)
+  }
+
+  val transmission = new ((Request) => Media) {
+    override def apply(v1: Request): Media = fromJson[Media](v1.contentString)
   }
 }

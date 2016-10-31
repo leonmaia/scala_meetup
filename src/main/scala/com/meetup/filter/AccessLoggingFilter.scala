@@ -14,8 +14,7 @@ object AccessLoggingFilter {
 
 class AccessLoggingFilter() extends SimpleFilter[Request, Response] {
 
-  val DateFormat = FastDateFormat.getInstance("dd/MMM/yyyy:HH:mm:ss Z",
-    TimeZone.getTimeZone("GMT"))
+  val DateFormat = FastDateFormat.getInstance("dd/MMM/yyyy:HH:mm:ss Z", TimeZone.getTimeZone("GMT"))
 
   def logger = LoggerFactory.getLogger(this.getClass)
 

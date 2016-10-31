@@ -26,12 +26,11 @@ scalacOptions in(Compile, console) ~= (_ filterNot (_ == "-Ywarn-unused-import")
 scalacOptions in(Test, console) := (scalacOptions in(Compile, console)).value
 
 resolvers ++= Seq(
-  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-  "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases",
+  Resolver.sonatypeRepo("snapshots"),
+  Resolver.sonatypeRepo("releases"),
   "Twitter repo" at "http://maven.twttr.com/",
   "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
-  "Mesosphere Public Repository" at "http://downloads.mesosphere.io/maven",
-  Resolver.bintrayRepo("websudos", "oss-releases")
+  "Mesosphere Public Repository" at "http://downloads.mesosphere.io/maven"
 )
 
 libraryDependencies ++= Seq(
@@ -43,16 +42,19 @@ libraryDependencies ++= Seq(
   "mesosphere" %% "jackson-case-class-module" % "0.1.2",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.4.4",
   "io.zipkin.finagle" %% "zipkin-finagle-http" % "0.3.0",
-  "ch.qos.logback" % "logback-classic" % "1.1.7"
+  "ch.qos.logback" % "logback-classic" % "1.1.7",
+  "com.rigon" %% "zipkin_tracing_macro" % "0.10-SNAPSHOT"
 )
 
-//test
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )
 
 coverageMinimum := 80
+
 coverageFailOnMinimum := true
+
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
 addCommandAlias("test", "testQuick")
 

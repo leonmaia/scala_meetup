@@ -1,6 +1,6 @@
 package com.meetup.http
 
-import com.meetup.json.converters._
+import com.meetup.json.serialize
 import com.twitter.finagle.http.{Response, Status, Version}
 
 object Responses {
