@@ -15,6 +15,7 @@ class Medias extends CachedRepository {
   private[this] val medias = mutable.Map.empty[UUID, Array[Byte]]
 
   val fn: (UUID) => Future[Option[Array[Byte]]] = new ((UUID) => Future[Option[Array[Byte]]]) {
+    @traced("fills-cache", "MutableMap", fromSeconds(1))
     override def apply(v1: UUID): Future[Option[Array[Byte]]] = Future.value(medias.synchronized(medias.get(v1)))
   }
 

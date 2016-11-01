@@ -11,9 +11,5 @@ object Responses {
 
     res
   }
-
-  def respondWithStatus(status: Status = Status.Ok): Response = {
-    Response(Version.Http11, status)
-  }
 }
 

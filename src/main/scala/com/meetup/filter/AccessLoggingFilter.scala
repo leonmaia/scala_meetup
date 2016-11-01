@@ -2,8 +2,10 @@ package com.meetup.filter
 
 import java.util.TimeZone
 
+import com.rigon.zipkin.traced
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Service, SimpleFilter}
+import com.twitter.util.Duration._
 import com.twitter.util.{Duration, Future, Stopwatch, Time}
 import org.apache.commons.lang.time.FastDateFormat
 import org.slf4j.LoggerFactory
@@ -18,16 +20,17 @@ class AccessLoggingFilter() extends SimpleFilter[Request, Response] {
 
   def logger = LoggerFactory.getLogger(this.getClass)
 
+  @traced("access-logging-filter", "filter", fromSeconds(1))
   def apply(request: Request, service: Service[Request, Response]): Future[Response] = {
     val elapsed = Stopwatch.start()
     service(request) onSuccess { resp =>
-      logger.info(format2(request, resp, elapsed()))
+      logger.info(format(request, resp, elapsed()))
     }
   }
 
   def formattedDate(): String = DateFormat.format(Time.now.toDate)
 
-  private[this] def format2(request: Request, response: Response, time: Duration): String = {
+  private[this] def format(request: Request, response: Response, time: Duration): String = {
     val remoteAddr = request.remoteAddress.getHostAddress
     val identd = "- -"
     val httpVersion = request.version.toString
