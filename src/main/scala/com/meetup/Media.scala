@@ -1,4 +1,10 @@
 package com.meetup
 
-case class Media(id: Long, title: String, description: String, url: String)
+import java.util.UUID
+
+case class Media(id: UUID, title: String, description: String, url: String) {
+  require(title.nonEmpty)
+  require(description.nonEmpty)
+  require(url.nonEmpty)
+}
 

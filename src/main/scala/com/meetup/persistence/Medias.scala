@@ -1,33 +1,36 @@
 package com.meetup.persistence
 
+import java.util.UUID
+
 import com.meetup.Media
 import com.meetup.json.toBytes
 import com.rigon.zipkin.traced
+import com.twitter.cache.guava.GuavaCache
 import com.twitter.util.Duration._
 import com.twitter.util.Future
 
 import scala.collection.mutable
 
-class Medias {
-  private[this] val medias = mutable.Map.empty[Long, Array[Byte]]
+class Medias extends CachedRepository {
+  private[this] val medias = mutable.Map.empty[UUID, Array[Byte]]
 
-  @traced("medias#get", "MutableMap", fromMilliseconds(800))
-  def get(id: Long): Future[Array[Byte]] = Future(
-    medias.synchronized {
-      medias.getOrElse(id, throw new IllegalStateException("Media doesn't exist! :("))
-    }
-  )
-
-  @traced("medias#add", "MutableMap", fromMilliseconds(800))
-  def add(data: Media): Future[Long] = {
-    Future.value(medias.synchronized {
-      val nextId = if (medias.isEmpty) 0 else medias.keys.max + 1
-      medias(nextId) = toBytes(data)
-      nextId
-    })
+  val fn: (UUID) => Future[Option[Array[Byte]]] = new ((UUID) => Future[Option[Array[Byte]]]) {
+    override def apply(v1: UUID): Future[Option[Array[Byte]]] = Future.value(medias.synchronized(medias.get(v1)))
   }
 
-  @traced("medias#all", "MutableMap", fromMilliseconds(800))
-  def all: Future[Seq[Array[Byte]]] = Future.value(medias.synchronized(medias.toList.sortBy(_._1).map(_._2)))
+  @traced("medias#get", "MutableMap", fromMilliseconds(800))
+  def get(id: UUID): Future[Option[Array[Byte]]] = {
+    val loadingCache: (UUID) => Future[Option[Array[Byte]]] = GuavaCache.fromLoadingCache(gCache)
+    loadingCache(id)
+  }
+
+  @traced("medias#add", "MutableMap", fromMilliseconds(800))
+  def add(data: Media): Future[UUID] = {
+    Future.value(medias.synchronized {
+      val copy: Media = data.copy(id = UUID.randomUUID())
+      medias(copy.id) = toBytes(copy)
+      copy.id
+    })
+  }
 }
 
